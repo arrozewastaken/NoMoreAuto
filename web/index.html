@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NoMoreAuto</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="viewport-fit">
+    <div class="scale-stage">
+      <div class="app-shell">
+        <aside class="sidebar">
+          <div class="brand-mark" aria-hidden="true"></div>
+          <nav class="sidebar-nav" aria-label="Primary">
+            <button
+              type="button"
+              class="sidebar-nav-button active"
+              data-screen="home"
+              title="Home"
+            >
+              ⌂
+            </button>
+            <button
+              type="button"
+              class="sidebar-nav-button"
+              data-screen="scanner"
+              title="Scan"
+            >
+              ◎
+            </button>
+          </nav>
+        </aside>
+
+        <main class="main-content">
+          <section class="app-screen active" id="home-screen">
+            <header class="page-header">
+              <h1 class="page-title">NoMoreAuto</h1>
+              <p class="page-subtitle">v1.0.0 public</p>
+            </header>
+            <button type="button" class="home-entry-card" id="open-scanner-button">
+              <b>Detect auto builders in your server</b>
+              <span class="home-entry-hint">Open scanner →</span>
+            </button>
+          </section>
+
+          <section class="app-screen" id="scanner-screen">
+            <header class="page-header page-header--toolbar">
+              <div>
+                <h1 class="page-title">Auto builder scan</h1>
+                <p class="page-subtitle"></p>
+              </div>
+              <button type="button" class="button-secondary" id="back-to-home-button">
+                Back
+              </button>
+            </header>
+
+            <div class="scanner-grid">
+              <div class="panel-card upload-card">
+                <h2 class="panel-label">Upload</h2>
+                <div class="upload-dropzone">
+                  <p class="upload-title">
+                    Click and select the player leaderboard (press esc)
+                  </p>
+                  <p class="upload-note">Creates a png image</p>
+                </div>
+              </div>
+
+              <div class="panel-card">
+                <div class="card-header-row">
+                  <h2 class="panel-label">Results</h2>
+                  <span class="status-badge">Mock</span>
+                </div>
+                <p class="mock-results-line">
+                  Detected autobuilders: Skylarx, jordan_r, Air_Jr, …
+                </p>
+                <p class="text-block text-muted text-small">
+                  Names are inferred from the leaderboard image (example output).
+                </p>
+                <button
+                  type="button"
+                  class="button-primary"
+                  disabled
+                  title="N/A"
+                >
+                  Analyze image
+                </button>
+              </div>
+
+              <div class="panel-card">
+                <h2 class="panel-label">Confidence</h2>
+                <p class="confidence-servers-heading">
+                  Detected servers they were in:
+                </p>
+                <div class="confidence-servers">
+                  <div class="server-confidence-block">
+                    <div class="score-row">
+                      <span>Boat Shredder Alliance</span>
+                      <span class="confidence-percent">87%</span>
+                    </div>
+                    <div class="confidence-bar">
+                      <span class="confidence-bar-fill" style="width: 87%"></span>
+                    </div>
+                  </div>
+                  <div class="server-confidence-block">
+                    <div class="score-row">
+                      <span>Duel logs hub</span>
+                      <span class="confidence-percent">62%</span>
+                    </div>
+                    <div class="confidence-bar">
+                      <span class="confidence-bar-fill" style="width: 62%"></span>
+                    </div>
+                  </div>
+                </div>
+                <p class="text-block text-muted text-small">
+                  Example scores — tied to Discord server context (mock).
+                </p>
+              </div>
+            </div>
+
+            <p class="scanner-disclaimer">
+              Do NOT harass anybody with this tool. Use it for educational purposes
+              only. It may not be 100% accurate and results are based on discord
+              servers.
+            </p>
+          </section>
+        </main>
+      </div>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

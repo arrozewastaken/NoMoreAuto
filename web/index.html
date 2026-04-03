@@ -62,33 +62,41 @@
             <div class="scanner-grid">
               <div class="panel-card upload-card">
                 <h2 class="panel-label">Upload</h2>
-                <div class="upload-dropzone">
-                  <p class="upload-title">
-                    Click and select the player leaderboard (press esc)
-                  </p>
-                  <p class="upload-note">Creates a png image</p>
+                <div class="upload-dropzone" id="upload-zone">
+                  <div class="upload-dropzone-copy">
+                    <p class="upload-title">
+                      Drop &amp; select the leaderboard snapshot (press esc)
+                    </p>
+                    <p class="upload-note">Creates a png image</p>
+                  </div>
+                  <div class="upload-actions">
+                    <button type="button" class="button-secondary" id="upload-button">
+                      Select image
+                    </button>
+                    <button
+                      type="button"
+                      class="button-secondary button-secondary--ghost"
+                      id="capture-button"
+                    >
+                      Snip an area
+                    </button>
+                  </div>
+                  <input type="file" id="upload-input" accept="image/*" hidden />
                 </div>
+                <div class="upload-preview is-empty" id="upload-preview-container">
+                  <img id="upload-preview" alt="Selected upload preview" />
+                </div>
+               
               </div>
 
               <div class="panel-card">
                 <div class="card-header-row">
                   <h2 class="panel-label">Results</h2>
-                  <span class="status-badge">Mock</span>
+                  <span class="status-badge" id="results-status-badge">Live</span>
                 </div>
-                <p class="mock-results-line">
-                  Detected autobuilders: Skylarx, jordan_r, Air_Jr, …
+                <p class="mock-results-line" id="results-line">
+                  Detected autobuilders: waiting for a snip...
                 </p>
-                <p class="text-block text-muted text-small">
-                  Names are inferred from the leaderboard image (example output).
-                </p>
-                <button
-                  type="button"
-                  class="button-primary"
-                  disabled
-                  title="N/A"
-                >
-                  Analyze image
-                </button>
               </div>
 
               <div class="panel-card">
@@ -96,42 +104,29 @@
                 <p class="confidence-servers-heading">
                   Detected servers they were in:
                 </p>
-                <div class="confidence-servers">
+                <div class="confidence-servers" id="detected-servers">
                   <div class="server-confidence-block">
                     <div class="score-row">
-                      <span>Boat Shredder Alliance</span>
-                      <span class="confidence-percent">87%</span>
+                      <span>Waiting for match</span>
+                      <span class="confidence-percent">0%</span>
                     </div>
                     <div class="confidence-bar">
-                      <span class="confidence-bar-fill" style="width: 87%"></span>
-                    </div>
-                  </div>
-                  <div class="server-confidence-block">
-                    <div class="score-row">
-                      <span>Duel logs hub</span>
-                      <span class="confidence-percent">62%</span>
-                    </div>
-                    <div class="confidence-bar">
-                      <span class="confidence-bar-fill" style="width: 62%"></span>
+                      <span class="confidence-bar-fill" style="width: 0%"></span>
                     </div>
                   </div>
                 </div>
-                <p class="text-block text-muted text-small">
-                  Example scores — tied to Discord server context (mock).
-                </p>
               </div>
             </div>
 
             <p class="scanner-disclaimer">
-              Do NOT harass anybody with this tool. Use it for educational purposes
-              only. It may not be 100% accurate and results are based on discord
-              servers.
+              Do NOT harass anybody with this tool. Educational purposes ONLY. It may not be 100% accurate.
             </p>
           </section>
         </main>
       </div>
     </div>
   </div>
+  <script type="text/javascript" src="/eel.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

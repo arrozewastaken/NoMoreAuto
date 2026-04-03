@@ -268,7 +268,8 @@ body {
 }
 
 .upload-card .upload-dropzone {
-  flex: 1;
+  width: 100%;
+  min-height: 180px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -279,6 +280,18 @@ body {
   border-radius: var(--radius-md);
   background: var(--color-surface);
   transition: background var(--transition-fast), border-color var(--transition-fast);
+  gap: 16px;
+}
+
+.upload-dropzone.is-dragover {
+  background: var(--color-tint);
+  border-color: var(--color-border-blue-strong);
+}
+
+.upload-dropzone-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .upload-card:hover .upload-dropzone {
@@ -294,6 +307,73 @@ body {
   font-size: 12px;
   color: var(--color-muted);
   margin-top: 6px;
+}
+
+.upload-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+
+.button-secondary--ghost {
+  background: transparent;
+  color: var(--color-text);
+  border-color: var(--color-border-blue-strong);
+}
+
+.button-secondary--ghost:hover {
+  background: var(--color-tint);
+}
+
+.upload-preview {
+  margin-top: 6px;
+  display: none;
+}
+
+.upload-preview.is-visible {
+  display: block;
+}
+
+.upload-preview img {
+  width: 100%;
+  max-height: 180px;
+  object-fit: contain;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-blue);
+}
+
+.snip-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  cursor: crosshair;
+  z-index: 9999;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  pointer-events: auto;
+}
+
+.snip-overlay-instruction {
+  margin-top: 18px;
+  background: rgba(15, 23, 42, 0.95);
+  padding: 6px 14px;
+  border-radius: 999px;
+  color: var(--color-surface);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.45);
+}
+
+.snip-selection {
+  position: absolute;
+  border: 2px dashed var(--color-border-blue);
+  background: rgba(37, 99, 235, 0.25);
+  box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.15);
+  pointer-events: none;
 }
 
 .text-block {

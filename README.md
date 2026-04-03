@@ -4,7 +4,7 @@
 <image src = "https://github.com/arrozewastaken/NoMoreAuto/blob/28df124847ba808e493696797c1535df987d40a3/assets/images/nomoreautobanner.png" height="200">
 
 <p align="center">
-  Open-source tool to find BABFT autobuilders in your server!
+  Open-source tool to find BABFT auto-builders in your server!
   
   
   

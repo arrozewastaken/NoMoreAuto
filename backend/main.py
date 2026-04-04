@@ -1,4 +1,4 @@
-#v1.0.0
+# 4 apr 2026
 
 import base64
 import json
@@ -7,8 +7,7 @@ import threading
 from io import BytesIO
 
 import eel
-import firebase_admin
-from firebase_admin import credentials, db
+
 import pyautogui
 import easyocr
 import numpy as np
@@ -21,55 +20,44 @@ reader = easyocr.Reader(['en'])
 load_dotenv()
 eel.init("web")
 
-
-def init_firebase():
-    if firebase_admin._apps:
-        return
-
-    key_blob = os.getenv("FIREBASE_KEY")
-    project_id = os.getenv("FIREBASE_PROJECT_ID")
-    database_url = os.getenv("FIREBASE_DATABASE_URL")
-
-    if not key_blob:
-        print("Firebase credentials not configured; skipping Firebase init.")
-        return
-
-    try:
-        if key_blob.strip().startswith("{"):
-            service_account = json.loads(key_blob)
-        else:
-            if not os.path.exists(key_blob):
-                print(f"Firebase credential file not found: {key_blob}")
-                return
-            with open(key_blob, "r", encoding="utf-8") as file:
-                service_account = json.load(file)
-    except Exception as exc:
-        print("Firebase credential load failed:", exc)
-        return
-
-    options = {}
-    if database_url:
-        options["databaseURL"] = database_url
-    elif project_id:
-        options["databaseURL"] = f"https://{project_id}.firebaseio.com"
-
-    cred = credentials.Certificate(service_account)
-    firebase_admin.initialize_app(cred, options or None)
-
-
 def fetch_firebase_servers(user_ids):
-    init_firebase()
-
-    if not firebase_admin._apps:
+    DATABASE_URL = os.getenv(
+    "FIREBASE_DATABASE_URL",
+    "https://nomoreauto-default-rtdb.firebaseio.com"
+).rstrip("/")
+    if not database_url:
+        print("FIREBASE_DATABASE_URL not set.")
         return {}
 
-    ref = db.reference("/")
     result = {}
 
-    for username, user_id in user_ids.items():
-        servers = ref.child(str(user_id)).get()
-        if servers:
-            result[username] = servers
+    for username, roblox_id in user_ids.items():
+        roblox_id = str(roblox_id).strip()
+
+        if not roblox_id.isdigit():
+            continue
+
+        url = f"{database_url}/users/{roblox_id}.json"
+
+        try:
+            response = requests.get(url, timeout=10)
+            if response.status_code != 200:
+                continue
+
+            servers = response.json()
+
+            if not servers:
+                continue
+
+            # If stored as {"Server A": true, "Server B": true}
+            if isinstance(servers, dict):
+                result[username] = list(servers.keys())
+
+            elif isinstance(servers, list):
+                result[username] = servers
+
+        except Exception as exc:
+            print(f"Firebase lookup failed for {roblox_id}: {exc}")
 
     return result
 

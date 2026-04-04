@@ -51,3 +51,5 @@ NoMoreAuto uses EasyOCR to convert screenshots of your player leaderboard into R
 NoMoreAuto does NOT break the Roblox TOS as it simply takes a picture of the leaderboard overlay.
 
 It is fully open-source, and none of your data is ever stored.
+
+No personal or private information apart from that which is already publically available is ever stored in our database. Server locations of users is anonymous purposefully in the app. You can request via a civil application or an appeals ticket to have your information removed or to appeal you being on there. Methods of providing info to the database is fully legal, and while we reserve the right to not fully disclose how it is built it is mostly user reports and ban logs from existing, cooperating servers. These servers wish to remain anonymous. Our priority is ensuring no harassment is ever ensured via this product.

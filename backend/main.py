@@ -21,10 +21,11 @@ load_dotenv()
 eel.init("web")
 
 def fetch_firebase_servers(user_ids):
-    DATABASE_URL = os.getenv(
-    "FIREBASE_DATABASE_URL",
-    "https://nomoreauto-default-rtdb.firebaseio.com"
-).rstrip("/")
+    database_url = os.getenv(
+        "FIREBASE_DATABASE_URL",
+        "https://nomoreauto-default-rtdb.firebaseio.com"
+    ).rstrip("/")
+
     if not database_url:
         print("FIREBASE_DATABASE_URL not set.")
         return {}
@@ -49,10 +50,8 @@ def fetch_firebase_servers(user_ids):
             if not servers:
                 continue
 
-            # If stored as {"Server A": true, "Server B": true}
             if isinstance(servers, dict):
                 result[username] = list(servers.keys())
-
             elif isinstance(servers, list):
                 result[username] = servers
 
@@ -60,7 +59,6 @@ def fetch_firebase_servers(user_ids):
             print(f"Firebase lookup failed for {roblox_id}: {exc}")
 
     return result
-
 
 @eel.expose
 def hello():

@@ -54,6 +54,6 @@ It is fully open-source, and none of your data is ever stored.
 
 No personal or private information apart from that which is already publically available is ever stored in our database. Server locations of users is anonymous purposefully in the app. You can request via a civil application or an appeals ticket to have your information removed or to appeal you being on there. Methods of providing info to the database is fully legal, and while we reserve the right to not fully disclose how it is built it is mostly user reports and ban logs from existing, cooperating servers. These servers wish to remain anonymous. Our priority is ensuring no harassment is ever ensued via this product.
 
-NoMoreAuto is intended for educational and informative use ONLY. The developers do not task responsibility for the actions taken by users, although we go to great lengths to ensure harassment does not happen.
+NoMoreAuto is intended for educational and informative use ONLY. The developers do not take responsibility for the actions taken by users, although we go to great lengths to ensure harassment does not happen.
 
-NoMoreAuto is developed by the Boat Shredder Alliance 🌝
+NoMoreAuto is developed with love by the Boat Shredder Alliance 🌝

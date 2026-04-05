@@ -1,3 +1,5 @@
+//
+
 (function () {
   const DESIGN_WIDTH = 1280;
   const DESIGN_HEIGHT = 720;

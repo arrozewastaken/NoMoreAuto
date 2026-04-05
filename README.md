@@ -32,7 +32,7 @@ NoMoreAuto uses EasyOCR to convert screenshots of your player leaderboard into R
 ----
 
 
-## 2️⃣ Getting started
+## 2️⃣ Getting started.
 
 - Install the exe:
   
@@ -50,4 +50,13 @@ NoMoreAuto uses EasyOCR to convert screenshots of your player leaderboard into R
 
 NoMoreAuto is an advisory tool designed to help identify potential autobuilders in Build A Boat For Treasure and does **not** violate the **Terms of Service of Roblox**, as it does not modify or interact with the platform directly and **instead relies on visual data such as leaderboard screenshots** and publicly available information. The project is **open-source**, and we only store minimal data required for functionality, specifically Roblox user IDs and aggregated flag counts; we do not store Discord IDs, server memberships, or any personal/private information. Data is sourced from user reports and **opt-in cooperating servers**, whose identities remain anonymous, and while certain processing and verification methods are kept confidential to prevent abuse and protect participating communities, all data collection is conducted lawfully and transparently at a high level. Users may request data removal or submit appeals through official channels at any time. NoMoreAuto **does not** take action against any account and is strictly informational; all decisions are made by the end user, and while we actively **discourage harassment or misuse**, the developers are not responsible for user actions. The sole purpose of NoMoreAuto is **educational and informational** use while promoting fair and privacy-conscious community moderation.
 
-NoMoreAuto is developed with love by the Boat Shredder Alliance 🌝
+
+
+----
+
+
+## 4️⃣ Development.
+
+NoMoreAuto is developed with love by the [Boat Shredder Alliance](https://discord.com/invite/DysDVNM8rS) 🌝
+
+Join us for pvp events, appeals and learn a completely new way of playing BABFT!

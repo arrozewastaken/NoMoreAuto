@@ -5,6 +5,7 @@ import json
 import os
 import threading
 from io import BytesIO
+from pathlib import Path
 
 import eel
 
@@ -15,12 +16,42 @@ import re
 import requests
 from dotenv import load_dotenv
 
-reader = easyocr.Reader(['en'])
+BASE_DIR = Path(__file__).resolve().parent.parent
+OCR_STORAGE_DIR = BASE_DIR / "assets" / "ocr"
+OCR_REQUIRED_FILES = ("craft_mlt_25k.pth", "english_g2.pth")
+
+_ocr_reader = None
+_ocr_lock = threading.Lock()
 
 load_dotenv()
 eel.init("web")
 
-def fetch_firebase_servers(user_ids):
+
+def ocr_models_present():
+    return all((OCR_STORAGE_DIR / filename).exists() for filename in OCR_REQUIRED_FILES)
+
+
+def get_ocr_reader():
+    global _ocr_reader
+
+    if _ocr_reader is not None:
+        return _ocr_reader, False, True
+
+    with _ocr_lock:
+        if _ocr_reader is not None:
+            return _ocr_reader, False, True
+
+        OCR_STORAGE_DIR.mkdir(parents=True, exist_ok=True)
+        cached = ocr_models_present()
+
+        _ocr_reader = easyocr.Reader(
+            ["en"],
+            model_storage_directory=str(OCR_STORAGE_DIR),
+            download_enabled=not cached,
+        )
+        return _ocr_reader, not cached, cached
+
+def fetch_firebase_users(user_ids):
     database_url = os.getenv(
         "FIREBASE_DATABASE_URL",
         "https://nomoreauto-default-rtdb.firebaseio.com"
@@ -45,15 +76,18 @@ def fetch_firebase_servers(user_ids):
             if response.status_code != 200:
                 continue
 
-            servers = response.json()
+            user_data = response.json()
 
-            if not servers:
+            if not user_data or not isinstance(user_data, dict):
                 continue
 
-            if isinstance(servers, dict):
-                result[username] = list(servers.keys())
-            elif isinstance(servers, list):
-                result[username] = servers
+            result[username] = {
+                "username": username,
+                "roblox_id": str(user_data.get("roblox_id") or roblox_id),
+                "flag_count": user_data.get("flag_count"),
+                "last_updated": user_data.get("last_updated"),
+                "confidence": user_data.get("confidence"),
+            }
 
         except Exception as exc:
             print(f"Firebase lookup failed for {roblox_id}: {exc}")
@@ -73,6 +107,30 @@ def handle_upload_click():
         "message": "Upload button reached Python successfully.",
         "firebase_key_loaded": key_loaded,
     }
+
+
+@eel.expose
+def ensure_ocr_ready():
+    try:
+        _reader_instance, installed, cached = get_ocr_reader()
+        return {
+            "ready": True,
+            "installed": installed,
+            "cached": cached,
+            "message": (
+                "OCR models installed and ready in assets/ocr."
+                if installed
+                else "OCR ready from assets/ocr."
+            ),
+        }
+    except Exception as exc:
+        print("ensure_ocr_ready failed:", exc)
+        return {
+            "ready": False,
+            "installed": False,
+            "cached": ocr_models_present(),
+            "message": str(exc),
+        }
 
 
 @eel.expose
@@ -155,7 +213,7 @@ def capture_snip():
         screenshot = pyautogui.screenshot(region=result["bbox"])
         ocr_result = run_ocr(screenshot)
         converted_ids = convert_id(ocr_result["text"] or [])
-        firebase_matches = fetch_firebase_servers(converted_ids)
+        firebase_users = fetch_firebase_users(converted_ids)
     except Exception as exc:
         print("capture_snip failed:", exc)
         return {"image_data": None, "error": str(exc)}
@@ -169,14 +227,16 @@ def capture_snip():
         "image_data": f"data:image/png;base64,{encoded}",
         "text": ocr_result["text"],
         "user_ids": converted_ids,
-        "firebase_matches": firebase_matches,
+        "firebase_users": firebase_users,
+        "firebase_matches": firebase_users,
     }
 
 
 def run_ocr(image):
+    reader_instance, _, _ = get_ocr_reader()
 
     img_array = np.array(image)
-    results = reader.readtext(img_array, detail=0)  
+    results = reader_instance.readtext(img_array, detail=0)
 
     text = " ".join(results)
     users = re.findall(r'@(\w+)', text)

@@ -95,25 +95,32 @@
                   <span class="status-badge" id="results-status-badge">Live</span>
                 </div>
                 <p class="mock-results-line" id="results-line">
-                  Detected autobuilders: waiting for a snip...
+                  Detected autobuilders: Waiting for a snip.
                 </p>
               </div>
 
               <div class="panel-card">
                 <h2 class="panel-label">Confidence</h2>
                 <p class="confidence-servers-heading">
-                  Detected servers they were in:
+                  Confidence scores, source summary, and scan dates.
                 </p>
                 <div class="confidence-servers" id="detected-servers">
-                  <div class="server-confidence-block">
-                    <div class="score-row">
-                      <span>Waiting for match</span>
-                      <span class="confidence-percent">0%</span>
+                  <article class="confidence-card confidence-card--empty">
+                    <div class="confidence-card-top">
+                      <div>
+                        <p class="confidence-card-name">Waiting for input</p>
+                        <p class="confidence-card-meta">Drop an image or snip the leaderboard to see results.</p>
+                      </div>
+                      <span class="confidence-pill">0%</span>
                     </div>
-                    <div class="confidence-bar">
-                      <span class="confidence-bar-fill" style="width: 0%"></span>
+                    <div class="confidence-meter" aria-hidden="true">
+                      <span class="confidence-meter-fill confidence-meter-fill--neutral" style="width: 0%"></span>
                     </div>
-                  </div>
+                    <div class="confidence-facts">
+                      <span>No sources</span>
+                      <span>-</span>
+                    </div>
+                  </article>
                 </div>
               </div>
             </div>
@@ -123,6 +130,18 @@
             </p>
           </section>
         </main>
+      </div>
+    </div>
+  </div>
+  <div class="ocr-modal" id="ocr-modal" aria-hidden="true">
+    <div class="ocr-modal-card" role="status" aria-live="polite">
+      <p class="ocr-modal-label">OCR setup</p>
+      <h2 class="ocr-modal-title" id="ocr-modal-title">OCR setup</h2>
+      <p class="ocr-modal-text" id="ocr-modal-text">
+        App launched. Looking in <code>assets/ocr</code> for EasyOCR models.
+      </p>
+      <div class="ocr-modal-bar" aria-hidden="true">
+        <span></span>
       </div>
     </div>
   </div>

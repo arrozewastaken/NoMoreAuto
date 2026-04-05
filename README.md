@@ -48,12 +48,6 @@ NoMoreAuto uses EasyOCR to convert screenshots of your player leaderboard into R
 
 ## 3️⃣ Extra info & legal.
 
-NoMoreAuto does NOT break the Roblox TOS as it simply takes a picture of the leaderboard overlay.
-
-It is fully open-source, and none of your data is ever stored.
-
-No personal or private information apart from that which is already publically available is ever stored in our database. Server locations of users is anonymous purposefully in the app. You can request via a civil application or an appeals ticket to have your information removed or to appeal you being on there. Methods of providing info to the database are fully legal, and while we reserve the right to not fully disclose how it is built it is mostly user reports and ban logs from existing, cooperating servers. These servers wish to remain anonymous. Our priority is ensuring no harassment is ever ensued via this product.
-
-NoMoreAuto is intended for educational and informative use ONLY. The developers do not take responsibility for the actions taken by users, although we go to great lengths to ensure harassment does not happen.
+NoMoreAuto is an advisory tool designed to help identify potential autobuilders in Build A Boat For Treasure and does **not** violate the **Terms of Service of Roblox**, as it does not modify or interact with the platform directly and **instead relies on visual data such as leaderboard screenshots** and publicly available information. The project is **open-source**, and we only store minimal data required for functionality, specifically Roblox user IDs and aggregated flag counts; we do not store Discord IDs, server memberships, or any personal/private information. Data is sourced from user reports and **opt-in cooperating servers**, whose identities remain anonymous, and while certain processing and verification methods are kept confidential to prevent abuse and protect participating communities, all data collection is conducted lawfully and transparently at a high level. Users may request data removal or submit appeals through official channels at any time. NoMoreAuto **does not** take action against any account and is strictly informational; all decisions are made by the end user, and while we actively **discourage harassment or misuse**, the developers are not responsible for user actions. The sole purpose of NoMoreAuto is **educational and informational** use while promoting fair and privacy-conscious community moderation.
 
 NoMoreAuto is developed with love by the Boat Shredder Alliance 🌝

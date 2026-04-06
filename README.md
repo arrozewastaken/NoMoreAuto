@@ -12,7 +12,7 @@
 
 
 
-<img src="https://github.com/arrozewastaken/NoMoreAuto/blob/28df124847ba808e493696797c1535df987d40a3/assets/images/nmab2.png" width="1000"/>
+<img src="https://github.com/arrozewastaken/NoMoreAuto/blob/352df9789a5afd61baf00a00c178c7577535d9f4/assets/images/nmab2.png" width="1000"/>
 
 </div>
 

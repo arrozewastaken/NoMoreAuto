@@ -1,7 +1,7 @@
 
 <div align="center">
 
-<image src = "https://github.com/arrozewastaken/NoMoreAuto/blob/28df124847ba808e493696797c1535df987d40a3/assets/images/nomoreautobanner.png" height="200">
+<image src = "https://github.com/arrozewastaken/NoMoreAuto/blob/28df124847ba808e493696797c1535df987d40a3/assets/images/nmab.png" height="200">
 
 <p align="center">
   Open-source tool to find BABFT auto-builders in your server!
@@ -12,7 +12,7 @@
 
 
 
-<img src="https://github.com/arrozewastaken/NoMoreAuto/blob/28df124847ba808e493696797c1535df987d40a3/assets/images/apppreview2.png" width="1000"/>
+<img src="https://github.com/arrozewastaken/NoMoreAuto/blob/28df124847ba808e493696797c1535df987d40a3/assets/images/nmab2.png" width="1000"/>
 
 </div>
 

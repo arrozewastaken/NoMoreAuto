@@ -1,4 +1,6 @@
 
+btw ts aint finished
+
 <div align="center">
 
 <image src = "https://github.com/arrozewastaken/NoMoreAuto/blob/79232bd64986914f4797d24708c3bef98397a760/assets/images/nmab.png" height="200">

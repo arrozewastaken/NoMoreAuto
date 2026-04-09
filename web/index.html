@@ -43,15 +43,15 @@
               <p class="page-subtitle">v1.0.0 public</p>
             </header>
             <button type="button" class="home-entry-card" id="open-scanner-button">
-              <b>Detect auto builders in your server</b>
-              <span class="home-entry-hint">Open scanner →</span>
+              <b>Find BABFT autobuilders in your server.</b>
+              <span class="home-entry-hint">Open review →</span>
             </button>
           </section>
 
           <section class="app-screen" id="scanner-screen">
             <header class="page-header page-header--toolbar">
               <div>
-                <h1 class="page-title">Auto builder scan</h1>
+                <h1 class="page-title">Autobuild review</h1>
                 <p class="page-subtitle"></p>
               </div>
               <button type="button" class="button-secondary" id="back-to-home-button">
@@ -89,44 +89,53 @@
                
               </div>
 
-              <div class="panel-card">
+              <div class="panel-card review-card">
                 <div class="card-header-row">
-                  <h2 class="panel-label">Results</h2>
-                  <span class="status-badge" id="results-status-badge">Live</span>
+                  <h2 class="panel-label">Review summary</h2>
+                  <span class="status-badge" id="review-status-badge">Live</span>
                 </div>
-                <p class="mock-results-line" id="results-line">
-                  Detected autobuilders: Waiting for a snip.
-                </p>
-              </div>
-
-              <div class="panel-card">
-                <h2 class="panel-label">Confidence</h2>
-                <p class="confidence-servers-heading">
-                  Confidence scores, source summary, and scan dates.
-                </p>
-                <div class="confidence-servers" id="detected-servers">
-                  <article class="confidence-card confidence-card--empty">
-                    <div class="confidence-card-top">
-                      <div>
-                        <p class="confidence-card-name">Waiting for input</p>
-                        <p class="confidence-card-meta">Drop an image or snip the leaderboard to see results.</p>
-                      </div>
-                      <span class="confidence-pill">0%</span>
-                    </div>
-                    <div class="confidence-meter" aria-hidden="true">
-                      <span class="confidence-meter-fill confidence-meter-fill--neutral" style="width: 0%"></span>
-                    </div>
-                    <div class="confidence-facts">
-                      <span>No sources</span>
-                      <span>-</span>
-                    </div>
+                <div class="review-hero">
+                  <p class="review-kicker">Detected autobuilders</p>
+                  <p class="review-count review-count--idle" id="review-count">Waiting for a snip</p>
+                  <p class="review-lead" id="review-summary">
+                    Drop an image or snip the leaderboard to see the detected count, source coverage,
+                    and latest database update.
+                  </p>
+                </div>
+                <div class="review-tags" id="review-tags">
+                  <span class="review-tag" data-tag="low" title="Weak signal from the database.">
+                    Low confidence
+                  </span>
+                  <span class="review-tag" data-tag="medium" title="Mixed signal. Worth checking manually.">
+                    Medium confidence
+                  </span>
+                  <span class="review-tag" data-tag="high" title="Strong signal with the clearest database match.">
+                    High confidence
+                  </span>
+                </div>
+                <div class="review-stats" id="review-stats">
+                  <article class="review-stat-card">
+                    <p class="review-stat-label">Matches</p>
+                    <p class="review-stat-value" id="review-match-count">-</p>
+                    <p class="review-stat-meta">Current scan result</p>
+                  </article>
+                  <article class="review-stat-card">
+                    <p class="review-stat-label">Sources</p>
+                    <p class="review-stat-value" id="review-source-count">-</p>
+                    <p class="review-stat-meta">Hover for details</p>
+                  </article>
+                  <article class="review-stat-card">
+                    <p class="review-stat-label">Last update</p>
+                    <p class="review-stat-value review-stat-value--timestamp" id="review-updated-at">-</p>
+                    <p class="review-stat-meta">From the latest database entry</p>
                   </article>
                 </div>
               </div>
             </div>
 
             <p class="scanner-disclaimer">
-              Do NOT harass anybody with this tool. Educational purposes ONLY. It may not be 100% accurate.
+              Use this as a moderation aid, not as a verdict. Do not harass, dox, or automate action
+              against anyone. Verify the evidence manually before taking any step.
             </p>
           </section>
         </main>

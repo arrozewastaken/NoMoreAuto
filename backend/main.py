@@ -52,6 +52,18 @@ def get_ocr_reader():
         return _ocr_reader, not cached, cached
 
 def fetch_firebase_users(user_ids):
+    # Expected Firebase shape per user:
+    # /users/{roblox_id}.json
+    # {
+    #   "roblox_id": "123456789",
+    #   "flag_count": 3,
+    #   "source_count": 2,
+    #   "source_summary": "2 community reports",
+    #   "last_updated": 1712668800,
+    #   "confidence": "high",
+    #   "review_note": "Matched by two shared reports",
+    #   "review_tags": ["high", "community", "manual"]
+    # }
     database_url = os.getenv(
         "FIREBASE_DATABASE_URL",
         "https://nomoreauto-default-rtdb.firebaseio.com"
@@ -83,16 +95,84 @@ def fetch_firebase_users(user_ids):
 
             result[username] = {
                 "username": username,
-                "roblox_id": str(user_data.get("roblox_id") or roblox_id),
                 "flag_count": user_data.get("flag_count"),
+                # Used to power the hover text for source coverage.
+                "source_count": user_data.get("source_count"),
+                # Optional human-readable summary if the database provides one.
+                "source_summary": user_data.get("source_summary") or user_data.get("sources"),
+                # Unix timestamp or millis timestamp for the latest update.
                 "last_updated": user_data.get("last_updated"),
+                # Expected values: low, medium, high.
                 "confidence": user_data.get("confidence"),
+                # Optional short note shown in the review summary.
+                "review_note": user_data.get("review_note"),
+                # Optional tag list used to highlight the badges in the UI.
+                "review_tags": user_data.get("review_tags") or user_data.get("tags") or user_data.get("labels"),
             }
 
         except Exception as exc:
             print(f"Firebase lookup failed for {roblox_id}: {exc}")
 
     return result
+
+
+def build_scan_metadata(firebase_users, conversion_error=None, converted_ids=None):
+    # Aggregate scan metadata for the browser UI.
+    # This keeps the front end focused on display logic instead of database math.
+    matched_users = list((firebase_users or {}).values())
+    matched_count = len(matched_users)
+    converted_total = len(converted_ids or [])
+    source_total = 0
+    latest_updated = None
+    review_tags = set()
+
+    for record in matched_users:
+        source_count = record.get("source_count")
+        try:
+            source_total += int(source_count)
+        except (TypeError, ValueError):
+            source_total += 1
+
+        updated_value = record.get("last_updated")
+        try:
+            numeric_updated = float(updated_value)
+        except (TypeError, ValueError):
+            numeric_updated = None
+
+        if numeric_updated is not None:
+            if latest_updated is None or numeric_updated > latest_updated:
+                latest_updated = numeric_updated
+
+        tags = record.get("review_tags")
+        if isinstance(tags, (list, tuple, set)):
+            for tag in tags:
+                text = str(tag).strip()
+                if text:
+                    review_tags.add(text)
+        elif isinstance(tags, str):
+            for part in re.split(r"[;,|]", tags):
+                text = part.strip()
+                if text:
+                    review_tags.add(text)
+        elif tags:
+            review_tags.add(str(tags).strip())
+
+    if conversion_error:
+        status = "error"
+    elif matched_count > 0:
+        status = "positive"
+    else:
+        status = "clear"
+
+    return {
+        "status": status,
+        "matched_count": matched_count,
+        "converted_total": converted_total,
+        "source_total": source_total,
+        "last_updated": latest_updated,
+        "review_tags": sorted(review_tags),
+        "conversion_error": conversion_error,
+    }
 
 @eel.expose
 def hello():
@@ -207,16 +287,27 @@ def capture_snip():
     done.wait()
 
     if "bbox" not in result:
-        return {"image_data": None, "error": result.get("error", "cancelled")}
+        return {
+            "image_data": None,
+            "error": result.get("error", "cancelled"),
+            "scan": build_scan_metadata({}, conversion_error=result.get("error", "cancelled")),
+        }
 
     try:
         screenshot = pyautogui.screenshot(region=result["bbox"])
         ocr_result = run_ocr(screenshot)
-        converted_ids = convert_id(ocr_result["text"] or [])
-        firebase_users = fetch_firebase_users(converted_ids)
+        detected_usernames = ocr_result["text"] or []
+        conversion_result = convert_id(detected_usernames)
+        converted_ids = conversion_result["converted_ids"]
+        conversion_error = conversion_result["error"] or ocr_result.get("error")
+        firebase_users = {} if conversion_error else fetch_firebase_users(converted_ids)
     except Exception as exc:
         print("capture_snip failed:", exc)
-        return {"image_data": None, "error": str(exc)}
+        return {
+            "image_data": None,
+            "error": str(exc),
+            "scan": build_scan_metadata({}, conversion_error=str(exc)),
+        }
 
     buffer = BytesIO()
     screenshot.save(buffer, format="PNG")
@@ -226,9 +317,9 @@ def capture_snip():
     return {
         "image_data": f"data:image/png;base64,{encoded}",
         "text": ocr_result["text"],
-        "user_ids": converted_ids,
         "firebase_users": firebase_users,
         "firebase_matches": firebase_users,
+        "scan": build_scan_metadata(firebase_users, conversion_error=conversion_error, converted_ids=converted_ids),
     }
 
 
@@ -249,24 +340,39 @@ def run_ocr(image):
         "error": None
     }
 
-def convert_id(list):
+def convert_id(usernames):
+    if not usernames:
+        return {
+            "converted_ids": {},
+            "error": "No usernames found in the capture.",
+        }
 
-    print("Sending to API:", list)
+    print("Sending to API:", usernames)
     url = "https://users.roblox.com/v1/usernames/users"
     payload = {
-        "usernames": list,
+        "usernames": usernames,
         "excludeBannedUsers": True
     }
 
-    response = requests.post(url, json=payload)
-    data = response.json()
+    try:
+        response = requests.post(url, json=payload, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+    except Exception as exc:
+        return {
+            "converted_ids": {},
+            "error": str(exc),
+        }
 
     result = {}
     for user in data.get("data", []):
         result[user["name"]] = user["id"]
 
     print(result)
-    return result
+    return {
+        "converted_ids": result,
+        "error": None,
+    }
 
 
 eel.start("index.html", size=(1280, 720), port=8080)

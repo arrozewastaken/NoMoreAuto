@@ -15,8 +15,13 @@
   const uploadStatus = document.getElementById("upload-status");
   const uploadPreview = document.getElementById("upload-preview");
   const uploadPreviewContainer = document.getElementById("upload-preview-container");
-  const resultsLine = document.getElementById("results-line");
-  const detectedServers = document.getElementById("detected-servers");
+  const reviewCount = document.getElementById("review-count");
+  const reviewSummary = document.getElementById("review-summary");
+  const reviewMatchCount = document.getElementById("review-match-count");
+  const reviewSourceCount = document.getElementById("review-source-count");
+  const reviewUpdatedAt = document.getElementById("review-updated-at");
+  const reviewTags = document.getElementById("review-tags");
+  const reviewStatusBadge = document.getElementById("review-status-badge");
   const ocrModal = document.getElementById("ocr-modal");
   const ocrModalTitle = document.getElementById("ocr-modal-title");
   const ocrModalText = document.getElementById("ocr-modal-text");
@@ -89,34 +94,6 @@
     }
     ocrModal.classList.remove("is-visible");
     ocrModal.setAttribute("aria-hidden", "true");
-  }
-
-  function normalizeConfidence(value) {
-    const label = String(value || "").trim().toLowerCase();
-    if (label === "low" || label === "medium" || label === "high") {
-      return label;
-    }
-    return "unknown";
-  }
-
-  function confidenceToScore(record) {
-    const label = normalizeConfidence(record?.confidence);
-    const labelScores = {
-      low: 34,
-      medium: 66,
-      high: 92,
-    };
-
-    if (label in labelScores) {
-      return labelScores[label];
-    }
-
-    const flagCount = Number(record?.flag_count);
-    if (Number.isFinite(flagCount)) {
-      return Math.max(22, Math.min(94, 28 + flagCount * 12));
-    }
-
-    return 40;
   }
 
   function formatUpdatedAt(value) {
@@ -204,103 +181,176 @@
     return ocrReadyPromise;
   }
 
-  function renderConfidencePreview({
-    title = "Waiting for input",
-    meta = "Drop an image or snip the leaderboard to preview results.",
-    confidenceText = "0%",
-    sourceText = "No sources",
-    extraText = "Preview only",
-    fillWidth = "0%",
-    cardClass = "confidence-card--empty",
-    fillClass = "confidence-meter-fill--neutral",
-  } = {}) {
-    if (!detectedServers) {
-      return;
-    }
-
-    detectedServers.innerHTML = `
-      <article class="confidence-card ${cardClass}">
-        <div class="confidence-card-top">
-          <div>
-            <p class="confidence-card-name">${title}</p>
-            <p class="confidence-card-meta">${meta}</p>
-          </div>
-          <span class="confidence-pill">${confidenceText}</span>
-        </div>
-        <div class="confidence-meter" aria-hidden="true">
-          <span class="confidence-meter-fill ${fillClass}" style="width: ${fillWidth}"></span>
-        </div>
-        <div class="confidence-facts">
-          <span>${sourceText}</span>
-          <span>${extraText}</span>
-        </div>
-      </article>
-    `;
+  function normalizeTag(value) {
+    return String(value || "")
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
   }
 
-  function renderLookupResults(firebaseUsers) {
-    if (!resultsLine || !detectedServers) {
+  function formatSourceCount(sourceCount) {
+    const numericValue = Number(sourceCount);
+    if (!Number.isFinite(numericValue) || numericValue < 0) {
+      return "Source data unavailable";
+    }
+    return `${numericValue} source${numericValue === 1 ? "" : "s"}`;
+  }
+
+  function updateReviewTags(scan) {
+    if (!reviewTags) {
       return;
     }
 
-    const escapeHtml = (value) =>
-      String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#39;");
+    const activeTags = new Set(
+      (scan?.review_tags || []).map((tag) => normalizeTag(tag))
+    );
+    const isIdle = scan?.status === "idle";
+    const matchedCount = Number(scan?.matched_count) || 0;
+    const sourceTotal = Number(scan?.source_total);
+    const hasSourceInfo = Number.isFinite(sourceTotal) && sourceTotal > 0;
+    const latestUpdateText = scan?.last_updated
+      ? formatUpdatedAt(scan.last_updated)
+      : "No update timestamp available";
 
-    const usernames = Object.keys(firebaseUsers || {});
-    if (usernames.length === 0) {
-      resultsLine.textContent = "Detected autobuilders: none found.";
-      renderConfidencePreview({
-        title: "No match found",
-        meta: "The scan did not find any matching Roblox IDs.",
-        confidenceText: "0%",
-        sourceText: "No sources",
-        extraText: "Waiting for input",
-      });
+    reviewTags.querySelectorAll(".review-tag").forEach((tagEl) => {
+      const tagKey = normalizeTag(tagEl.dataset.tag);
+      const textKey = normalizeTag(tagEl.textContent);
+      const isLow = tagKey === "low" || textKey.includes("low-confidence");
+      const isMedium = tagKey === "medium" || textKey.includes("medium-confidence");
+      const isHigh = tagKey === "high" || textKey.includes("high-confidence");
+
+      let isActive = activeTags.has(tagKey) || activeTags.has(textKey);
+      if (!isActive && isLow) {
+        isActive = !isIdle && !scan?.conversion_error && !hasSourceInfo && matchedCount === 0;
+      }
+      if (!isActive && isMedium) {
+        isActive = !isIdle && !scan?.conversion_error && hasSourceInfo && matchedCount === 0;
+      }
+      if (!isActive && isHigh) {
+        isActive = !isIdle && !scan?.conversion_error && matchedCount > 0 && hasSourceInfo;
+      }
+
+      tagEl.classList.toggle("is-active", isActive);
+
+      if (isLow) {
+        tagEl.title = scan?.conversion_error
+          ? "Could not evaluate confidence because the scan failed."
+          : "Weak signal from the database.";
+      } else if (isMedium) {
+        tagEl.title = scan?.conversion_error
+          ? "Could not evaluate confidence because the scan failed."
+          : `Mixed signal. Latest update: ${latestUpdateText}.`;
+      } else if (isHigh) {
+        tagEl.title = scan?.conversion_error
+          ? "Could not evaluate confidence because the scan failed."
+          : `Strong signal with the clearest match. Latest update: ${latestUpdateText}.`;
+      }
+    });
+  }
+
+  function renderScanSummary(scan = {}, firebaseUsers = {}) {
+    if (
+      !reviewCount ||
+      !reviewSummary ||
+      !reviewMatchCount ||
+      !reviewSourceCount ||
+      !reviewUpdatedAt ||
+      !reviewStatusBadge
+    ) {
       return;
     }
 
-    resultsLine.textContent = `Detected autobuilders: ${usernames.join(", ")}`;
-    detectedServers.innerHTML = usernames
-      .map((username) => {
-        const record = firebaseUsers[username] || {};
-        const confidenceLabel = normalizeConfidence(record.confidence);
-        const confidenceScore = confidenceToScore(record);
-        const flagCountValue = Number(record.flag_count);
-        const flagCountText = Number.isFinite(flagCountValue)
-          ? `${flagCountValue} flag${flagCountValue === 1 ? "" : "s"}`
-          : "Flag count unavailable";
-        const updatedText = formatUpdatedAt(record.last_updated);
-        const robloxIdText = record.roblox_id
-          ? `Roblox ID ${record.roblox_id}`
-          : "Roblox ID unavailable";
-        const confidenceText = confidenceLabel === "unknown"
-          ? "Unknown"
-          : confidenceLabel.charAt(0).toUpperCase() + confidenceLabel.slice(1);
-        return `
-          <article class="confidence-card confidence-card--${escapeHtml(confidenceLabel)}">
-            <div class="confidence-card-top">
-              <div>
-                <p class="confidence-card-name">${escapeHtml(username)}</p>
-                <p class="confidence-card-meta">${escapeHtml(robloxIdText)}</p>
-              </div>
-              <span class="confidence-pill">${escapeHtml(confidenceText)}</span>
-            </div>
-            <div class="confidence-meter" aria-hidden="true">
-              <span class="confidence-meter-fill" style="width: ${confidenceScore}%"></span>
-            </div>
-            <div class="confidence-facts">
-              <span>${escapeHtml(flagCountText)}</span>
-              <span>Updated ${escapeHtml(updatedText)}</span>
-            </div>
-          </article>
-        `;
-    })
-      .join("");
+    const conversionError = String(scan?.conversion_error || "").trim();
+    const matchedUsers = Object.keys(firebaseUsers || {});
+    const matchedCount = Number(scan?.matched_count);
+    const safeMatchedCount = Number.isFinite(matchedCount) ? matchedCount : matchedUsers.length;
+    const sourceTotal = Number(scan?.source_total);
+    const latestUpdated = scan?.last_updated;
+    const isIdle = scan?.status === "idle";
+    const status = isIdle
+      ? "idle"
+      : conversionError
+        ? "error"
+        : safeMatchedCount > 0
+          ? "positive"
+          : "clear";
+
+    reviewCount.textContent = isIdle
+      ? "Waiting for a snip"
+      : conversionError
+        ? "Conversion error"
+        : `${safeMatchedCount} detected autobuilder${safeMatchedCount === 1 ? "" : "s"}`;
+    reviewCount.className = `review-count review-count--${status}`;
+    reviewCount.title = isIdle
+      ? "Run a snip to see the detected autobuilder count."
+      : conversionError
+        ? `Scan failed while converting usernames: ${conversionError}`
+        : safeMatchedCount > 0
+          ? `${safeMatchedCount} matched autobuilder${safeMatchedCount === 1 ? "" : "s"} found in the scan.`
+          : "No matched autobuilders found in the scan.";
+
+    reviewSummary.textContent = isIdle
+      ? "Drop an image or snip the leaderboard to see the detected count, source coverage, and latest database update."
+      : conversionError
+        ? "Could not convert usernames from the capture."
+        : safeMatchedCount > 0
+          ? "Potential matches were found. Review the source coverage and latest update below."
+          : "No autobuilders were detected in this scan.";
+
+    reviewMatchCount.textContent = isIdle
+      ? "-"
+      : conversionError
+        ? "?"
+        : String(safeMatchedCount);
+    reviewMatchCount.className = `review-stat-value review-stat-value--${status}`;
+    reviewMatchCount.title = reviewCount.title;
+
+    reviewSourceCount.textContent = isIdle
+      ? "-"
+      : formatSourceCount(sourceTotal);
+    reviewSourceCount.title = isIdle
+      ? "Source count will appear after the first scan."
+      : Number.isFinite(sourceTotal)
+        ? `Based on ${sourceTotal} source${sourceTotal === 1 ? "" : "s"} in the database.`
+        : "Source count unavailable.";
+
+    reviewUpdatedAt.textContent = isIdle
+      ? "-"
+      : formatUpdatedAt(latestUpdated);
+    reviewUpdatedAt.title = isIdle
+      ? "Latest database update will appear after the first scan."
+      : latestUpdated
+        ? `Latest database update: ${formatUpdatedAt(latestUpdated)}`
+        : "No update timestamp available.";
+
+    reviewStatusBadge.textContent = isIdle
+      ? "Idle"
+      : conversionError
+        ? "Amber"
+        : safeMatchedCount > 0
+          ? "Red"
+          : "Green";
+    reviewStatusBadge.className = `status-badge status-badge--${status}`;
+
+    updateReviewTags({
+      ...scan,
+      matched_count: safeMatchedCount,
+      source_total: Number.isFinite(sourceTotal) ? sourceTotal : null,
+    });
+  }
+
+  function renderInitialReviewPanel() {
+    renderScanSummary(
+      {
+        status: "idle",
+        matched_count: null,
+        source_total: null,
+        last_updated: null,
+        review_tags: [],
+      },
+      {}
+    );
   }
 
   async function captureRegion() {
@@ -319,16 +369,30 @@
         setStatus(
           result?.error || "Capture failed. Make sure the snipping package is installed."
         );
+        renderScanSummary(
+          result?.scan || {
+            status: "error",
+            conversion_error: result?.error || "Capture failed.",
+          },
+          {}
+        );
         return;
       }
 
       showPreview(dataUrl);
-      renderLookupResults(result?.firebase_users || result?.firebase_matches);
+      renderScanSummary(result?.scan || {}, result?.firebase_users || result?.firebase_matches || {});
       callPythonUpload();
       setStatus("Snip ready.");
     } catch (error) {
       console.error(error);
       setStatus("Snipping failed; try again.");
+      renderScanSummary(
+        {
+          status: "error",
+          conversion_error: String(error?.message || error || "Snipping failed"),
+        },
+        {}
+      );
     }
   }
 
@@ -419,7 +483,7 @@
     resizeTo(DESIGN_WIDTH, DESIGN_HEIGHT);
   } catch (_) {}
 
-  renderConfidencePreview();
+  renderInitialReviewPanel();
   setTimeout(() => {
     startOcrSetup();
   }, 250);

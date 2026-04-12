@@ -64,3 +64,5 @@ NoMoreAuto is an advisory tool designed to help identify potential autobuilders 
 NoMoreAuto is developed with love by the [Boat Shredder Alliance](https://discord.com/invite/DysDVNM8rS) 🌝
 
 Join us for pvp events, appeals and learn a completely new way of playing BABFT!
+
+Also Naser please unban me from your discord server 🙏, all i did was send a ss of NoMoreAuto!!!!

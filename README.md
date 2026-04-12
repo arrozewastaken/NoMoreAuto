@@ -1,5 +1,6 @@
 > [!IMPORTANT]
 > Our database isn't fully built yet, so please contribute by making user reports in the discord server linked below!
+> We also haven't fully built an exe for public use, so if you don't know how to run the main.py file in backend, please give this repo a star or watch it for later updates!
 
 <div align="center">
 

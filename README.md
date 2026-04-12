@@ -28,7 +28,7 @@
 
 ## 1️⃣ How does it work?
 
-NoMoreAuto uses EasyOCR to convert screenshots of your player leaderboard into Roblox user names, comparing them against our database of [] VERIFIED autobuilders/exploiters. We do not guarantee alt detection or 100% accuracy.
+NoMoreAuto uses EasyOCR to convert screenshots of your player leaderboard into Roblox user names, comparing them against our database of [placeholder, i'll get to it] VERIFIED autobuilders/exploiters. We do not guarantee alt detection or 100% accuracy.
 
 
 <br>
@@ -38,7 +38,7 @@ NoMoreAuto uses EasyOCR to convert screenshots of your player leaderboard into R
 
 ## 2️⃣ Getting started.
 
-- Install the exe:
+- Install the exe: [placeholder, i'll get to it]
   
 - Go to -> AutoBuilder Scan
 - Press Esc in roblox to access the leaderboard

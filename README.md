@@ -1,5 +1,5 @@
-
-btw ts aint finished
+> [!IMPORTANT]
+> Our database isn't fully built yet, so please contribute by making user reports in the discord server linked below!
 
 <div align="center">
 

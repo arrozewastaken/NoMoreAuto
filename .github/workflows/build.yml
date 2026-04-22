@@ -1,8 +1,6 @@
-name: Build EXE
+name: Build EXE (Release Only)
 
 on:
-  push:
-    branches: [ main ]
   release:
     types: [created]
 
@@ -29,16 +27,9 @@ jobs:
 
     - name: Build EXE
       run: |
-        pyinstaller --noconfirm --onefile --windowed --name NoMoreAuto --add-data "web;web" --hidden-import eel main.py
-
-    - name: Upload artifact (for pushes)
-      uses: actions/upload-artifact@v4
-      with:
-        name: NoMoreAuto-exe
-        path: dist/NoMoreAuto.exe
+        pyinstaller --noconfirm --onefile --windowed --name NoMoreAuto --add-data "backend/web;web" --hidden-import eel backend/main.py
 
     - name: Attach EXE to release
-      if: github.event_name == 'release'
       uses: softprops/action-gh-release@v2
       with:
         files: dist/NoMoreAuto.exe

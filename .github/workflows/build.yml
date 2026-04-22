@@ -2,7 +2,7 @@ name: Build EXE (Release Only)
 
 on:
   release:
-    types: [created]
+    types: [created, edited]
 
 jobs:
   build:
@@ -28,7 +28,7 @@ jobs:
     - name: Build EXE
       run: |
         pyinstaller --noconfirm --onefile --windowed --name NoMoreAuto --add-data "web;web" --hidden-import eel backend/main.py
-        
+
     - name: Attach EXE to release
       uses: softprops/action-gh-release@v2
       with:

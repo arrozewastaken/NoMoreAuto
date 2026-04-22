@@ -1,7 +1,4 @@
-> [!IMPORTANT]
-> Our database isn't fully built yet, so please contribute by making user reports in the discord server linked below!
-> 
-> We also haven't created an exe for public use, so if you don't know how to run the main.py file in backend, please give this repo a star or watch it for later updates!
+
 
 <div align="center">
 
@@ -29,7 +26,7 @@
 
 ## 1️⃣ How does it work?
 
-NoMoreAuto uses EasyOCR to convert screenshots of your player leaderboard into Roblox user names, comparing them against our database of [placeholder, i'll get to it] VERIFIED autobuilders/exploiters. We do not guarantee alt detection or 100% accuracy.
+NoMoreAuto checks whos in your **BABFT server**, comparing them against our databases of **VERIFIED** autobuilders/exploiters, albeit the app **does not guarantee** alt detection or 100% accuracy. We build these database by opt-in user reports and servers willing to  share banlists relating to exploiting :D
 
 
 <br>
@@ -39,12 +36,10 @@ NoMoreAuto uses EasyOCR to convert screenshots of your player leaderboard into R
 
 ## 2️⃣ Getting started.
 
-- Install the exe: [placeholder, i'll get to it]
-  
-- Go to -> AutoBuilder Scan
-- Press Esc in roblox to access the leaderboard
-- Press -> snip an area
-- Select the area with Roblox usernames
+- Go to the releases page: [Click here.](https://github.com/arrozewastaken/NoMoreAuto/releases)
+- Scroll down to the latest release.
+- Download the .exe and run the app!
+
 
 <br>
 

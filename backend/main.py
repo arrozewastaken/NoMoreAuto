@@ -7,7 +7,7 @@ import threading
 from io import BytesIO
 from pathlib import Path
 
-import eel
+import eel,sys
 
 import pyautogui
 import easyocr
@@ -23,8 +23,17 @@ OCR_REQUIRED_FILES = ("craft_mlt_25k.pth", "english_g2.pth")
 _ocr_reader = None
 _ocr_lock = threading.Lock()
 
+
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+    
 load_dotenv()
-eel.init("web")
+eel.init(resource_path("web"))
 
 
 def ocr_models_present():

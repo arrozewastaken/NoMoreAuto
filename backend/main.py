@@ -10,7 +10,6 @@ from pathlib import Path
 import eel,sys
 
 import pyautogui
-import easyocr
 import numpy as np
 import re
 import requests
@@ -53,6 +52,7 @@ def get_ocr_reader():
         OCR_STORAGE_DIR.mkdir(parents=True, exist_ok=True)
         cached = ocr_models_present()
 
+        import easyocr
         _ocr_reader = easyocr.Reader(
             ["en"],
             model_storage_directory=str(OCR_STORAGE_DIR),
